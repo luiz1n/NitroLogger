@@ -9,8 +9,7 @@ using WebSocketSharp.Server;
 namespace NitroLogger.Network.Communication
 {
     public class ServerL : WebSocketBehavior
-    { 
-
+    {
     }
 
     public class Server
