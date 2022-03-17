@@ -1,12 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using WebSocketSharp;
+using NitroLogger.Sulakore;
 
 namespace NitroLogger.Network.Communication
 {
     public class Client
     {
+        public static WebSocket client;
+
+        public static void Start(string SocketUrl) 
+        {
+            client = new WebSocket(SocketUrl);
+
+            client.OnMessage += (object sender, MessageEventArgs e) =>
+            {
+                HMessage message = new HMessage(e.RawData, false);
+                Server.Sessions.Broadcast(message.ToBytes());
+            };
+        }
     }
 }

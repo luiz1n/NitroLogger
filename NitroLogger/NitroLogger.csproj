@@ -94,6 +94,7 @@
     <Compile Include="Network\Proxy\Handler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sulakore\Endianness\BigEndian.cs" />
     <Compile Include="Sulakore\HMessage.cs" />
     <Compile Include="Utils\Texts.cs" />
     <EmbeddedResource Include="Forms\Form1.resx">

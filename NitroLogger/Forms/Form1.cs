@@ -1,4 +1,5 @@
-﻿using NitroLogger.Network.Proxy;
+﻿using NitroLogger.Network.Communication;
+using NitroLogger.Network.Proxy;
 using NitroLogger.Utils;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace NitroLogger.Forms
         public void InitializeStuffs() 
         {
             lblStatus.Text = Texts.STANDING_BY;
+            Server.Start();
         }
 
 

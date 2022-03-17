@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using NitroLogger.Network.Communication;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Titanium.Web.Proxy;
@@ -50,6 +51,7 @@ namespace NitroLogger.Network.Proxy
                 string json = "\"socket.url\": \"" + socketUrl.Trim() + "\",";
                 e.SetResponseBodyString(body.Replace(json, "\"socket.url\": \"ws://127.0.0.1:9092\","));
                 proxyServer.Stop();
+                Client.Start(socketUrl);
             }
         }
 
