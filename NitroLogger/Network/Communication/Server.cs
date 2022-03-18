@@ -2,6 +2,7 @@
 using WebSocketSharp.Server;
 
 using NitroLogger.Sulakore;
+using System.Diagnostics;
 
 namespace NitroLogger.Network.Communication
 {
@@ -18,6 +19,7 @@ namespace NitroLogger.Network.Communication
             if (e.IsBinary)
             {
                 HMessage message = new HMessage(e.RawData, true);
+                Debug.WriteLine(message.Header.ToString());
                 Client.client.Send(message.ToBytes());
             }
         }
@@ -34,5 +36,6 @@ namespace NitroLogger.Network.Communication
             server.AddWebSocketService<ServerL>("/");
             server.Start();
         }
+
     }
 }

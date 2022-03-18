@@ -89,8 +89,15 @@
     <Compile Include="Forms\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PacketLogger.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PacketLogger.Designer.cs">
+      <DependentUpon>PacketLogger.cs</DependentUpon>
+    </Compile>
     <Compile Include="Network\Communication\Client.cs" />
     <Compile Include="Network\Communication\Server.cs" />
+    <Compile Include="Network\Nitro.cs" />
     <Compile Include="Network\Proxy\Handler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -99,6 +106,9 @@
     <Compile Include="Utils\Texts.cs" />
     <EmbeddedResource Include="Forms\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PacketLogger.resx">
+      <DependentUpon>PacketLogger.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
