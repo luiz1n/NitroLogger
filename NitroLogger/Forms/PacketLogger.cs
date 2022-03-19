@@ -42,16 +42,34 @@ namespace NitroLogger.Forms
         }
 
         #region Log
-        private void Log(bool isOutgoing, string packet) 
+        public void Log(string msg, Color color)
         {
-            pktLogTxt.SelectionStart = pktLogTxt.TextLength;
-            pktLogTxt.SelectionLength = 0;
-            pktLogTxt.SelectionColor = isOutgoing ? Color.LimeGreen : Color.Red;
-            pktLogTxt.AppendText(pktLogTxt.TextLength > 0 ? "\n" + packet : packet);
+            if (InvokeRequired)
+            {
+                Invoke(new LogDelegate(Log), msg, color);
+            }
+            else
+            {
+                pktLogTxt.SelectionStart = pktLogTxt.TextLength;
+                pktLogTxt.SelectionLength = 0;
+                pktLogTxt.SelectionColor = color;
+                pktLogTxt.AppendText(pktLogTxt.TextLength > 0 ? "\n" + msg : msg);
+                pktLogTxt.SelectionColor = pktLogTxt.ForeColor;
+            }
+
+        }
+        public void LogClient(string msg)
+        {
+            Log(msg, Color.Red);
         }
 
-        public void LogClient(string packet) => Log(false, packet);
-        public void LogServer(string packet) => Log(true, packet);
+        public void LogServer(string msg)
+        {
+            Log(msg, Color.LimeGreen);
+        }
+
+        private delegate void LogDelegate(string msg, Color color);
+
         #endregion
 
     }

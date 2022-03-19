@@ -15,7 +15,7 @@ namespace NitroLogger
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new PacketLogger());
+            Application.Run(new Form1());
         }
     }
 }

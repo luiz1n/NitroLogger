@@ -1,4 +1,6 @@
 ﻿using NitroLogger.Network.Communication;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -41,17 +43,63 @@ namespace NitroLogger.Network.Proxy
             proxyServer.SetAsSystemHttpsProxy(explicitProxyEndPoint);
         }
 
+        private static string TryFindSocketUrl( string body ) 
+        {
+
+            string socketUrl = "";
+            string matchF = "";
+
+            Dictionary<string, string> matchesSocketUrl = new Dictionary<string, string>{
+                ["\"socket.url\": \"(.+)\","] = "\"socket.url\": \"",
+                ["\"socket.url\" : \"(.+)\","] = "\"socket.url\" : \"",
+                ["\"socket.url\"  :\"(.+)\","] = "\"socket.url\"  :\"",
+
+                ["socket.url\":\"(.+?)\","] = "socket.url\":\"",
+                ["{\"socket.url\":\"(.+)\","] = "{\"socket.url\":\"",
+                ["{\"socket.url\" : \"(.+)\","] = "{\"socket.url\" : \"",
+                ["{\"socket.url\"  :\"(.+)\","] = "{\"socket.url\"  :\""
+
+            };
+
+            foreach( var match_ in matchesSocketUrl )
+            {
+                string match = match_.Key;
+
+                var tryMatch = Regex.Match(body, match);
+
+                char k = '"';
+
+                if ( tryMatch.Success && !tryMatch.Groups[1].Value.Contains(k.ToString()) )
+                {
+                    socketUrl = tryMatch.Groups[1].Value;
+                    matchF = match_.Value;
+                }
+
+            }
+
+            return socketUrl + "?" + matchF;
+
+        }
+
         private static async Task OnResponse(object sender, SessionEventArgs e)
         {
             string body = e.GetResponseBodyAsString().Result;
 
             if (body.Contains("socket.url"))
             {
-                string socketUrl = Regex.Match(body, "\"socket.url(.+)\"").Groups[1].Value.Split(',')[0].Split('"')[2];
-                string json = "\"socket.url\": \"" + socketUrl.Trim() + "\",";
-                e.SetResponseBodyString(body.Replace(json, "\"socket.url\": \"ws://127.0.0.1:9092\","));
-                proxyServer.Stop();
+
+                string[] result = TryFindSocketUrl(body).Split('?');
+                string socketUrl = result[0];
+                string toReplace = result[1];
+
+                string json = toReplace + socketUrl.Trim() + "\",";
+
+                e.SetResponseBodyString(body.Replace(json, toReplace + "ws://127.0.0.1:9092\","));
+
                 Client.Start(socketUrl);
+
+                Stop();
+
             }
         }
 

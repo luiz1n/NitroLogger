@@ -2,7 +2,6 @@
 using WebSocketSharp.Server;
 
 using NitroLogger.Sulakore;
-using System.Diagnostics;
 
 namespace NitroLogger.Network.Communication
 {
@@ -12,14 +11,21 @@ namespace NitroLogger.Network.Communication
         {
             Client.client.SslConfiguration = Context.WebSocket.SslConfiguration;
             Client.client.Connect();
+
+            Nitro.OnStartedConnection();
+
         }
+
+        protected override void OnClose(CloseEventArgs e) => Nitro.OnStoppedConnection();
 
         protected override void OnMessage(MessageEventArgs e)
         {
             if (e.IsBinary)
             {
                 HMessage message = new HMessage(e.RawData, true);
-                Debug.WriteLine(message.Header.ToString());
+
+                Nitro.OnMessageReceived(message);
+
                 Client.client.Send(message.ToBytes());
             }
         }
@@ -27,6 +33,7 @@ namespace NitroLogger.Network.Communication
 
     public class Server
     {
+
         public static WebSocketServer server;
         public static WebSocketSessionManager Sessions => server.WebSocketServices["/"].Sessions;
 

@@ -115,6 +115,5 @@ namespace NitroLogger.Forms
         private ToolStripMenuItem topMostToolStripMenuItem;
         private RichTextBox pktLogTxt;
 
-        private delegate void LogDelegate(string msg, Color color);
     }
 }
