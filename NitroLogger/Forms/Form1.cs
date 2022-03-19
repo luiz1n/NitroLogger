@@ -2,18 +2,9 @@
 using NitroLogger.Network.Communication;
 using NitroLogger.Network.Proxy;
 using NitroLogger.Sulakore;
-using NitroLogger.Sulakore.Endianness;
 using NitroLogger.Utils;
+
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace NitroLogger.Forms
@@ -25,13 +16,6 @@ namespace NitroLogger.Forms
         public Form1()
         {
             InitializeComponent();
-
-            string sk = "{\"socket.url\":\"wss://nitro.ironhotel.biz\",\"asset.url\":\"https://cdn.ironhotel.biz/auto-nitro\",";
-
-            var test = Regex.Match(sk, "socket.url\":\"(.+?)\",").Groups[1].Value;
-            Debug.WriteLine(test);
-
-
             InitializeStuffs();
         }
 
@@ -59,15 +43,8 @@ namespace NitroLogger.Forms
             Nitro.OnStopped += (object sender, EventArgs e) =>
                 Invoke(new Action(() => this.Stopped()));
 
-
-
             Nitro.OnMessage += (object sender, HMessage packet) =>
             {
-                if (packet.Header == 4000) 
-                {
-                    packet.ReplaceString("PRODUCTION-201611291003-338511768", 0);
-                    packet.ReplaceString("HTML5", 1);
-                }
 
                 string structure = ToStructure(packet);
 

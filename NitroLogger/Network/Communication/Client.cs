@@ -1,8 +1,7 @@
-﻿using WebSocketSharp;
+﻿using System.Security.Authentication;
 using NitroLogger.Sulakore;
 using NitroLogger.Forms;
-using System.Diagnostics;
-using System;
+using WebSocketSharp;
 
 namespace NitroLogger.Network.Communication
 {
