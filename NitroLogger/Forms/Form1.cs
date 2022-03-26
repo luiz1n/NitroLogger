@@ -98,8 +98,7 @@ namespace NitroLogger.Forms
         private void button2_Click(object sender, EventArgs e)
         {
             HMessage packet = new HMessage(textBox1.Text);
-            Nitro.SendToServer(packet: packet.ToBytes());
-
+            Nitro.SendToServer(packet.ToBytes());
         }
     }
 }

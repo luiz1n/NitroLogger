@@ -88,23 +88,25 @@ namespace NitroLogger.Network.Proxy
         {
             try
             {
-                string body = e.GetResponseBodyAsString().Result;
+                
+                    string body = e.GetResponseBodyAsString().Result;
 
-                if (body.Contains("socket.url"))
-                {
-                    string[] result = TryFindSocketUrl(body).Split('?');
-                    string socketUrl = result[0];
-                    string toReplace = result[1];
+                    if (body.Contains("socket.url"))
+                    {
+                        string[] result = TryFindSocketUrl(body).Split('?');
+                        string socketUrl = result[0];
+                        string toReplace = result[1];
 
-                    string json = toReplace + socketUrl.Trim() + "\",";
+                        string json = toReplace + socketUrl.Trim() + "\",";
 
-                    e.SetResponseBodyString(body.Replace(json, toReplace + "ws://127.0.0.1:9092\","));
+                        e.SetResponseBodyString(body.Replace(json, toReplace + "ws://127.0.0.1:9092\","));
 
-                    Client.Start(socketUrl);
+                        Client.Start(socketUrl);
 
-                    Stop();
+                        Stop();
 
-                }
+                    }
+                
             }
 
             catch { }
