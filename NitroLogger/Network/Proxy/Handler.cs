@@ -1,6 +1,4 @@
-﻿using NitroLogger.Network.Communication;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -8,6 +6,8 @@ using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
 using Titanium.Web.Proxy.Network;
+
+using NitroLogger.Network.Communication;
 
 namespace NitroLogger.Network.Proxy
 {
@@ -17,11 +17,13 @@ namespace NitroLogger.Network.Proxy
         private static ProxyServer proxyServer;
         private static ExplicitProxyEndPoint explicitProxyEndPoint;
 
-        public static void Start() 
+        public static void Start()
         {
             proxyServer = new ProxyServer(true, false, false);
             proxyServer.CertificateManager.CertificateEngine = CertificateEngine.BouncyCastle;
+
             proxyServer.BeforeResponse += OnResponse;
+            proxyServer.AfterResponse += AfterResponse;
 
             explicitProxyEndPoint = new ExplicitProxyEndPoint(System.Net.IPAddress.Any, 8080, true);
 
@@ -29,7 +31,7 @@ namespace NitroLogger.Network.Proxy
 
         }
 
-        public static void Stop() 
+        public static void Stop()
         {
             proxyServer.Dispose();
         }
@@ -43,13 +45,14 @@ namespace NitroLogger.Network.Proxy
             proxyServer.SetAsSystemHttpsProxy(explicitProxyEndPoint);
         }
 
-        private static string TryFindSocketUrl( string body ) 
+        private static string TryFindSocketUrl(string body)
         {
 
             string socketUrl = "";
             string matchF = "";
 
-            Dictionary<string, string> matchesSocketUrl = new Dictionary<string, string>{
+            Dictionary<string, string> matchesSocketUrl = new Dictionary<string, string>
+            {
                 ["\"socket.url\": \"(.+)\","] = "\"socket.url\": \"",
                 ["\"socket.url\" : \"(.+)\","] = "\"socket.url\" : \"",
                 ["\"socket.url\"  :\"(.+)\","] = "\"socket.url\"  :\"",
@@ -61,15 +64,15 @@ namespace NitroLogger.Network.Proxy
 
             };
 
-            foreach( var match_ in matchesSocketUrl )
+            foreach (KeyValuePair<string, string> match_ in matchesSocketUrl)
             {
                 string match = match_.Key;
 
-                var tryMatch = Regex.Match(body, match);
+                Match tryMatch = Regex.Match(body, match);
 
                 char k = '"';
 
-                if ( tryMatch.Success && !tryMatch.Groups[1].Value.Contains(k.ToString()) )
+                if (tryMatch.Success && !tryMatch.Groups[1].Value.Contains(k.ToString()))
                 {
                     socketUrl = tryMatch.Groups[1].Value;
                     matchF = match_.Value;
@@ -81,27 +84,43 @@ namespace NitroLogger.Network.Proxy
 
         }
 
-        private static async Task OnResponse(object sender, SessionEventArgs e)
+        private static Task OnResponse(object sender, SessionEventArgs e)
         {
-            string body = e.GetResponseBodyAsString().Result;
-
-            if (body.Contains("socket.url"))
+            try
             {
+                string body = e.GetResponseBodyAsString().Result;
 
-                string[] result = TryFindSocketUrl(body).Split('?');
-                string socketUrl = result[0];
-                string toReplace = result[1];
+                if (body.Contains("socket.url"))
+                {
+                    string[] result = TryFindSocketUrl(body).Split('?');
+                    string socketUrl = result[0];
+                    string toReplace = result[1];
 
-                string json = toReplace + socketUrl.Trim() + "\",";
+                    string json = toReplace + socketUrl.Trim() + "\",";
 
-                e.SetResponseBodyString(body.Replace(json, toReplace + "ws://127.0.0.1:9092\","));
+                    e.SetResponseBodyString(body.Replace(json, toReplace + "ws://127.0.0.1:9092\","));
 
-                Client.Start(socketUrl);
+                    Client.Start(socketUrl);
 
-                Stop();
+                    Stop();
 
+                }
             }
+
+            catch { }
+            
+            return Task.CompletedTask;
+            
+
         }
+
+        private static Task AfterResponse(object sender, SessionEventArgs e) 
+        {
+            if (e.HttpClient.Request.Url.Contains(".json") && e.HttpClient.Request.Url.Contains("?"))
+                e.HttpClient.Request.Url = $"{e.HttpClient.Request.Url.Split('?')[0]}";
+            return Task.CompletedTask;
+        }
+
 
     }
 }

@@ -5,14 +5,29 @@ namespace NitroLogger.Sulakore.Endianness
 {
     public static class BigEndian
     {
-        public static int GetSize(int value) => 4;
-        public static int GetSize(bool value) => 1;
-        public static int GetSize(short value) => 2;
-        public static int GetSize(string value) => Encoding.UTF8.GetByteCount(value) + 2;
+        public static int GetSize(int value)
+        {
+            return 4;
+        }
+
+        public static int GetSize(bool value)
+        {
+            return 1;
+        }
+
+        public static int GetSize(short value)
+        {
+            return 2;
+        }
+
+        public static int GetSize(string value)
+        {
+            return Encoding.UTF8.GetByteCount(value) + 2;
+        }
 
         public static byte[] GetBytes(int value)
         {
-            var buffer = new byte[4];
+            byte[] buffer = new byte[4];
             buffer[0] = (byte)(value >> 24);
             buffer[1] = (byte)(value >> 16);
             buffer[2] = (byte)(value >> 8);
@@ -23,7 +38,7 @@ namespace NitroLogger.Sulakore.Endianness
 
         public static byte[] GetBytes(bool value)
         {
-            var buffer = new byte[1] { 0 };
+            byte[] buffer = new byte[1] { 0 };
             buffer[0] = (byte)(value ? 1 : 0);
 
             return buffer;
@@ -31,7 +46,7 @@ namespace NitroLogger.Sulakore.Endianness
 
         public static byte[] GetBytes(short value)
         {
-            var buffer = new byte[2];
+            byte[] buffer = new byte[2];
             buffer[0] = (byte)(value >> 8);
             buffer[1] = (byte)value;
 
@@ -43,7 +58,7 @@ namespace NitroLogger.Sulakore.Endianness
             byte[] stringData = Encoding.UTF8.GetBytes(value);
             byte[] lengthData = GetBytes((short)stringData.Length);
 
-            var buffer = new byte[lengthData.Length + stringData.Length];
+            byte[] buffer = new byte[lengthData.Length + stringData.Length];
             Buffer.BlockCopy(lengthData, 0, buffer, 0, lengthData.Length);
             Buffer.BlockCopy(stringData, 0, buffer, lengthData.Length, stringData.Length);
 
@@ -78,6 +93,9 @@ namespace NitroLogger.Sulakore.Endianness
             return result;
         }
 
-        public static bool ToBoolean(byte[] value, int startIndex) => value[startIndex] == 1;
+        public static bool ToBoolean(byte[] value, int startIndex)
+        {
+            return value[startIndex] == 1;
+        }
     }
 }

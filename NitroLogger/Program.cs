@@ -1,7 +1,6 @@
-﻿using System;
+﻿using NitroLogger.Forms;
+using System;
 using System.Windows.Forms;
-
-using NitroLogger.Forms;
 
 namespace NitroLogger
 {
@@ -11,7 +10,7 @@ namespace NitroLogger
         /// Ponto de entrada principal para o aplicativo.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

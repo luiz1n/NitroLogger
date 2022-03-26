@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text;
+﻿using NitroLogger.Sulakore.Endianness;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
-
-using NitroLogger.Sulakore.Endianness;
 
 namespace NitroLogger.Sulakore
 {
@@ -84,7 +83,11 @@ namespace NitroLogger.Sulakore
                 _bodyBuffer = new byte[data.Length - 6];
                 Buffer.BlockCopy(data, 6, _bodyBuffer, 0, data.Length - 6);
             }
-            else _bodyBuffer = data;
+            else
+            {
+                _bodyBuffer = data;
+            }
+
             _body.AddRange(_bodyBuffer);
         }
 
@@ -167,7 +170,7 @@ namespace NitroLogger.Sulakore
         }
         public byte[] ReadBytes(int length, ref int position)
         {
-            var value = new byte[length];
+            byte[] value = new byte[length];
             Buffer.BlockCopy(_bodyBuffer, position, value, 0, length);
             position += length;
 
@@ -213,7 +216,9 @@ namespace NitroLogger.Sulakore
         public void WriteString(string value, int position)
         {
             if (value == null)
+            {
                 value = string.Empty;
+            }
 
             byte[] encoded = BigEndian.GetBytes(value);
             WriteObject(encoded, value, position);
@@ -278,13 +283,18 @@ namespace NitroLogger.Sulakore
         public void RemoveString(int position)
         {
             int readable = (_body.Count - position);
-            if (readable < 2) return;
+            if (readable < 2)
+            {
+                return;
+            }
 
             short stringLength =
                 BigEndian.ToInt16(_bodyBuffer, position);
 
             if (readable >= (stringLength + 2))
+            {
                 RemoveBytes(stringLength + 2, position);
+            }
         }
 
         public void RemoveBytes(int length)
@@ -359,7 +369,10 @@ namespace NitroLogger.Sulakore
         public bool CanReadString(int position)
         {
             int readable = (_body.Count - position);
-            if (readable < 2) return false;
+            if (readable < 2)
+            {
+                return false;
+            }
 
             short stringLength =
                 BigEndian.ToInt16(_bodyBuffer, position);
@@ -397,7 +410,9 @@ namespace NitroLogger.Sulakore
         public byte[] ToBytes()
         {
             if (IsCorrupted)
+            {
                 _toBytesCache = _bodyBuffer;
+            }
 
             return _toBytesCache ??
                 (_toBytesCache = Construct(Header, _bodyBuffer));
@@ -427,27 +442,28 @@ namespace NitroLogger.Sulakore
                         }
                     case "u":
                         {
-                            short uValue = 0;
-                            short.TryParse(value, out uValue);
+                            short.TryParse(value, out short uValue);
                             data = BigEndian.GetBytes(uValue);
                             break;
                         }
                     case "i":
                         {
-                            int iValue = 0;
-                            int.TryParse(value, out iValue);
+                            int.TryParse(value, out int iValue);
                             data = BigEndian.GetBytes(iValue);
                             break;
                         }
                     case "b":
                         {
-                            byte bValue = 0;
-                            if (!byte.TryParse(value, out bValue))
+                            if (!byte.TryParse(value, out byte bValue))
                             {
                                 data = BigEndian.GetBytes(
                                     (value.ToLower() == "true"));
                             }
-                            else data = new byte[] { bValue };
+                            else
+                            {
+                                data = new byte[] { bValue };
+                            }
+
                             break;
                         }
                 }
@@ -466,7 +482,7 @@ namespace NitroLogger.Sulakore
 
         public static byte[] GetBytes(params object[] values)
         {
-            var buffer = new List<byte>();
+            List<byte> buffer = new List<byte>();
             foreach (object value in values)
             {
                 switch (Type.GetTypeCode(value.GetType()))
@@ -483,7 +499,11 @@ namespace NitroLogger.Sulakore
                             {
                                 buffer.AddRange(data);
                             }
-                            else buffer.AddRange(BigEndian.GetBytes(value.ToString()));
+                            else
+                            {
+                                buffer.AddRange(BigEndian.GetBytes(value.ToString()));
+                            }
+
                             break;
                         }
                 }
@@ -493,7 +513,7 @@ namespace NitroLogger.Sulakore
         public static byte[] Construct(short header, params object[] values)
         {
             byte[] body = GetBytes(values);
-            var buffer = new byte[6 + body.Length];
+            byte[] buffer = new byte[6 + body.Length];
 
             byte[] headerData = BigEndian.GetBytes(header);
             byte[] lengthData = BigEndian.GetBytes(2 + body.Length);

@@ -30,7 +30,7 @@ namespace NitroLogger.Forms
         }
 
 
-        public void InitializeStuffs() 
+        public void InitializeStuffs()
         {
             packetLogger = new PacketLogger();
             lblStatus.Text = Texts.STANDING_BY;
@@ -38,10 +38,10 @@ namespace NitroLogger.Forms
             Server.Start();
 
             Nitro.OnStarted += (object sender, EventArgs e) =>
-                Invoke(new Action(() => this.Started()));
+                Invoke(new Action(() => Started()));
 
             Nitro.OnStopped += (object sender, EventArgs e) =>
-                Invoke(new Action(() => this.Stopped()));
+                Invoke(new Action(() => Stopped()));
 
             Nitro.OnMessage += (object sender, HMessage packet) =>
             {
@@ -49,9 +49,13 @@ namespace NitroLogger.Forms
                 string structure = ToStructure(packet);
 
                 if (!packet.IsOutgoing)
+                {
                     Invoke(new Action(() => packetLogger.LogClient(structure)));
+                }
                 else
+                {
                     Invoke(new Action(() => packetLogger.LogServer(structure)));
+                }
             };
 
         }
@@ -65,7 +69,7 @@ namespace NitroLogger.Forms
                 lblStatus.Text = Texts.WAITING;
                 Handler.Start();
             }
-            else 
+            else
             {
                 button1.Text = "Intercept";
                 lblStatus.Text = Texts.STANDING_BY;
@@ -73,14 +77,14 @@ namespace NitroLogger.Forms
             }
         }
 
-        private void Started() 
+        private void Started()
         {
             packetLogger.Show();
             Text = "NitroLogger ~ Connected";
             lblStatus.Text = Texts.CONNECTED;
         }
 
-        private void Stopped() 
+        private void Stopped()
         {
             try
             {
@@ -91,5 +95,11 @@ namespace NitroLogger.Forms
             catch { }
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            HMessage packet = new HMessage(textBox1.Text);
+            Nitro.SendToServer(packet: packet.ToBytes());
+
+        }
     }
 }

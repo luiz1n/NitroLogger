@@ -1,6 +1,5 @@
 ﻿using WebSocketSharp;
 using WebSocketSharp.Server;
-
 using NitroLogger.Sulakore;
 
 namespace NitroLogger.Network.Communication
@@ -16,7 +15,10 @@ namespace NitroLogger.Network.Communication
 
         }
 
-        protected override void OnClose(CloseEventArgs e) => Nitro.OnStoppedConnection();
+        protected override void OnClose(CloseEventArgs e)
+        {
+            Nitro.OnStoppedConnection();
+        }
 
         protected override void OnMessage(MessageEventArgs e)
         {
@@ -37,7 +39,7 @@ namespace NitroLogger.Network.Communication
         public static WebSocketServer server;
         public static WebSocketSessionManager Sessions => server.WebSocketServices["/"].Sessions;
 
-        public static void Start() 
+        public static void Start()
         {
             server = new WebSocketServer(9092);
             server.AddWebSocketService<ServerL>("/");
