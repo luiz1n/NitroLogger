@@ -16,40 +16,6 @@ using WebSocketSharp.Server;
 namespace NitroLogger
 {
 
-    class Client {
-
-        public static WebSocket client;
-
-        public static void Start( string ws ) {
-            client = new WebSocket(ws);
-            client.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
-
-            client.OnMessage += (object sender, MessageEventArgs e) =>
-            {
-                HMessage message = new HMessage(e.RawData);
-                Form1.server.WebSocketServices["/"].Sessions.Broadcast(message.ToBytes());
-            };
-
-        }
-    }
-
-    class Servidor : WebSocketBehavior {
-        protected override void OnOpen()
-        {
-            if (!Client.client.IsAlive)
-            {
-                Client.client.Connect();
-            }
-        }
-
-        protected override void OnMessage(MessageEventArgs e)
-        {
-            var packet = new HMessage(e.RawData);
-            MessageBox.Show(packet.Header.ToString());
-        }
-
-    }
-
     public partial class Form1 : Form
     {
 
