@@ -45,7 +45,6 @@ namespace NitroLogger.Forms
 
             Nitro.OnMessage += (object sender, HMessage packet) =>
             {
-
                 string structure = ToStructure(packet);
 
                 if (!packet.IsOutgoing)
@@ -93,12 +92,22 @@ namespace NitroLogger.Forms
                 lblStatus.Text = Texts.WAITING;
             }
             catch { }
+            
         }
 
-        private void button2_Click(object sender, EventArgs e)
+
+        #region Send To Server & Client
+        private void btnSendToServer_Click(object sender, EventArgs e)
         {
             HMessage packet = new HMessage(textBox1.Text);
             Nitro.SendToServer(packet.ToBytes());
         }
+
+        private void btnSendToClient_Click(object sender, EventArgs e)
+        {
+            HMessage packet = new HMessage(textBox1.Text);
+            Nitro.SendToServer(packet.ToBytes());
+        }
+        #endregion
     }
 }

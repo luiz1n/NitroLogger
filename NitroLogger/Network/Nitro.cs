@@ -1,6 +1,6 @@
-﻿using NitroLogger.Network.Communication;
+﻿using System;
 using NitroLogger.Sulakore;
-using System;
+using NitroLogger.Network.Communication;
 
 namespace NitroLogger.Network
 {
@@ -8,10 +8,8 @@ namespace NitroLogger.Network
     {
         public static void SendToServer(short header, params object[] values) => Client.client.Send(HMessage.Construct(header, values));
         public static void SendToServer(byte[] packet) => Client.client.Send(packet);
-
         public static void SendToClient(short header, params object[] values) => Server.Sessions.Broadcast(HMessage.Construct(header, values));
         public static void SendToClient(byte[] packet) => Server.Sessions.Broadcast(packet);
-
 
         public static event EventHandler OnStarted;
         public static event EventHandler OnStopped;
